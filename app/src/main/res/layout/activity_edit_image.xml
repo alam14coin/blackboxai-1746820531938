@@ -3,138 +3,131 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="@android:color/white">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:elevation="0dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
-            app:menu="@menu/menu_edit"
+            android:background="@android:color/white"
+            android:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:navigationIcon="@drawable/ic_close_black_24dp"
             app:title="@string/enhance_image"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
+            app:titleTextColor="@android:color/black"
+            app:menu="@menu/menu_edit" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="16dp"
+        android:layout_weight="1"
+        android:background="@android:color/black"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <!-- Image Container -->
-        <FrameLayout
-            android:id="@+id/imageContainer"
+        <ImageView
+            android:id="@+id/imageView"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:background="@android:color/black"
-            app:layout_constraintBottom_toTopOf="@id/controlsContainer"
-            app:layout_constraintTop_toTopOf="parent">
+            android:layout_height="match_parent"
+            android:scaleType="fitCenter" />
 
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitCenter" />
+        <com.example.docscanner.ui.camera.EdgeDetectionOverlay
+            android:id="@+id/cropOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone" />
 
-            <com.example.docscanner.ui.camera.EdgeDetectionOverlay
-                android:id="@+id/cropOverlay"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone" />
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center" />
 
-            <ProgressBar
-                android:id="@+id/progressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+    </FrameLayout>
 
-        </FrameLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        android:orientation="vertical"
+        android:padding="16dp">
 
-        <!-- Controls Container -->
-        <LinearLayout
-            android:id="@+id/controlsContainer"
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/filterGroup"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#F5F5F5"
-            android:orientation="vertical"
-            android:padding="16dp"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:singleSelection="true"
+            app:selectionRequired="true"
+            android:chipSpacing="8dp">
 
-            <!-- Filter Options -->
-            <com.google.android.material.chip.ChipGroup
-                android:id="@+id/filterGroup"
-                android:layout_width="match_parent"
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filterOriginal"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:singleSelection="true">
+                android:checked="true"
+                android:text="@string/filter_original" />
 
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/filterOriginal"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:checked="true"
-                    android:text="@string/filter_original" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/filterBW"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/filter_bw" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/filterGray"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/filter_grayscale" />
-
-                <com.google.android.material.chip.Chip
-                    android:id="@+id/filterEnhance"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/filter_enhance" />
-
-            </com.google.android.material.chip.ChipGroup>
-
-            <!-- Edit Controls -->
-            <LinearLayout
-                android:layout_width="match_parent"
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filterBW"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:gravity="center">
+                android:text="@string/filter_bw" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonRotate"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:text="Rotate"
-                    app:icon="@android:drawable/ic_menu_rotate" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filterGray"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_grayscale" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonCrop"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Crop"
-                    app:icon="@android:drawable/ic_menu_crop" />
+            <com.google.android.material.chip.Chip
+                android:id="@+id/filterEnhance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/filter_enhance" />
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/buttonConfirm"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Confirm"
-                    android:visibility="gone"
-                    app:icon="@android:drawable/ic_menu_save" />
+        </com.google.android.material.chip.ChipGroup>
 
-            </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonRotate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="Rotate"
+                app:icon="@drawable/ic_rotate_right_black_24dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonCrop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Crop"
+                app:icon="@drawable/ic_crop_black_24dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/buttonConfirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Confirm"
+                android:visibility="gone"
+                app:icon="@drawable/ic_check_black_24dp" />
 
         </LinearLayout>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
