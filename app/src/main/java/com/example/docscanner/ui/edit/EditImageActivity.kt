@@ -4,20 +4,21 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.view.View
+import android.view.animation.AnimationUtils
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.example.docscanner.R
 import com.example.docscanner.databinding.ActivityEditImageBinding
 import com.example.docscanner.util.ImageProcessor
+import com.example.docscanner.util.PDFGenerator
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.opencv.android.OpenCVLoader
-import org.opencv.android.Utils
-import org.opencv.core.Mat
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.*
 
 class EditImageActivity : AppCompatActivity() {
     private lateinit var binding: ActivityEditImageBinding
@@ -31,20 +32,20 @@ class EditImageActivity : AppCompatActivity() {
         binding = ActivityEditImageBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
-        // Initialize OpenCV
-        if (!OpenCVLoader.initDebug()) {
-            Toast.makeText(this, "Failed to initialize OpenCV", Toast.LENGTH_SHORT).show()
-            finish()
-            return
-        }
-        
         setupUI()
         loadImage()
     }
     
     private fun setupUI() {
+        // Animate toolbar and controls when they appear
+        binding.toolbar.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in))
+        binding.controlsContainer.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in))
+
         binding.toolbar.apply {
-            setNavigationOnClickListener { onBackPressed() }
+            setNavigationOnClickListener { 
+                finish()
+                overridePendingTransition(R.anim.fade_in, R.anim.slide_out_left)
+            }
             setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.action_save -> {
@@ -65,16 +66,25 @@ class EditImageActivity : AppCompatActivity() {
             }
         }
         
-        binding.buttonRotate.setOnClickListener {
-            rotateImage()
+        binding.buttonRotate.apply {
+            setOnClickListener {
+                startAnimation(AnimationUtils.loadAnimation(context, R.anim.button_press))
+                rotateImage()
+            }
         }
         
-        binding.buttonCrop.setOnClickListener {
-            toggleCropMode()
+        binding.buttonCrop.apply {
+            setOnClickListener {
+                startAnimation(AnimationUtils.loadAnimation(context, R.anim.button_press))
+                toggleCropMode()
+            }
         }
         
-        binding.buttonConfirm.setOnClickListener {
-            confirmCrop()
+        binding.buttonConfirm.apply {
+            setOnClickListener {
+                startAnimation(AnimationUtils.loadAnimation(context, R.anim.button_press))
+                confirmCrop()
+            }
         }
     }
     
@@ -92,6 +102,7 @@ class EditImageActivity : AppCompatActivity() {
                 
                 withContext(Dispatchers.Main) {
                     binding.imageView.setImageBitmap(currentBitmap)
+                    binding.imageView.startAnimation(AnimationUtils.loadAnimation(this@EditImageActivity, R.anim.fade_in))
                     binding.progressBar.visibility = View.GONE
                 }
             } catch (e: Exception) {
@@ -118,6 +129,7 @@ class EditImageActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     currentBitmap = filteredBitmap
                     binding.imageView.setImageBitmap(currentBitmap)
+                    binding.imageView.startAnimation(AnimationUtils.loadAnimation(this@EditImageActivity, R.anim.fade_in))
                     binding.progressBar.visibility = View.GONE
                 }
             } catch (e: Exception) {
@@ -139,6 +151,7 @@ class EditImageActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     currentBitmap = rotatedBitmap
                     binding.imageView.setImageBitmap(currentBitmap)
+                    binding.imageView.startAnimation(AnimationUtils.loadAnimation(this@EditImageActivity, R.anim.fade_in))
                     binding.progressBar.visibility = View.GONE
                 }
             } catch (e: Exception) {
@@ -152,6 +165,7 @@ class EditImageActivity : AppCompatActivity() {
     
     private fun toggleCropMode() {
         binding.cropOverlay.visibility = View.VISIBLE
+        binding.cropOverlay.startAnimation(AnimationUtils.loadAnimation(this, R.anim.fade_in))
         binding.buttonConfirm.visibility = View.VISIBLE
         binding.buttonCrop.visibility = View.GONE
     }
@@ -167,6 +181,7 @@ class EditImageActivity : AppCompatActivity() {
                 withContext(Dispatchers.Main) {
                     currentBitmap = croppedBitmap
                     binding.imageView.setImageBitmap(currentBitmap)
+                    binding.imageView.startAnimation(AnimationUtils.loadAnimation(this@EditImageActivity, R.anim.fade_in))
                     binding.cropOverlay.visibility = View.GONE
                     binding.buttonConfirm.visibility = View.GONE
                     binding.buttonCrop.visibility = View.VISIBLE
@@ -182,8 +197,36 @@ class EditImageActivity : AppCompatActivity() {
     }
     
     private fun savePDF() {
-        // TODO: Implement PDF generation and saving
-        Toast.makeText(this, "PDF generation will be implemented", Toast.LENGTH_SHORT).show()
+        binding.progressBar.visibility = View.VISIBLE
+        
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                val fileName = "DOC_${SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(Date())}.pdf"
+                val outputFile = File(getExternalFilesDir(null), fileName)
+                
+                val success = PDFGenerator.createPDF(
+                    this@EditImageActivity,
+                    listOf(currentBitmap!!),
+                    outputFile.absolutePath
+                )
+                
+                withContext(Dispatchers.Main) {
+                    if (success) {
+                        Toast.makeText(this@EditImageActivity, "PDF saved successfully", Toast.LENGTH_SHORT).show()
+                        finish()
+                        overridePendingTransition(R.anim.fade_in, R.anim.slide_out_left)
+                    } else {
+                        Toast.makeText(this@EditImageActivity, "Failed to save PDF", Toast.LENGTH_SHORT).show()
+                    }
+                    binding.progressBar.visibility = View.GONE
+                }
+            } catch (e: Exception) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(this@EditImageActivity, "Failed to save PDF", Toast.LENGTH_SHORT).show()
+                    binding.progressBar.visibility = View.GONE
+                }
+            }
+        }
     }
     
     enum class FilterType {
