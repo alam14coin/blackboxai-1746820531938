@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primary brand colors -->
+    <color name="colorPrimary">#000000</color>
+    <color name="colorPrimaryDark">#000000</color>
+    <color name="colorAccent">#2196F3</color>
+
+    <!-- Background colors -->
+    <color name="backgroundColor">#FFFFFF</color>
+    <color name="surfaceColor">#FFFFFF</color>
+    <color name="cardBackground">#F5F5F5</color>
+
+    <!-- Text colors -->
+    <color name="textPrimary">#000000</color>
+    <color name="textSecondary">#757575</color>
+    <color name="textHint">#BDBDBD</color>
+
+    <!-- Status colors -->
+    <color name="success">#4CAF50</color>
+    <color name="error">#F44336</color>
+    <color name="warning">#FFC107</color>
+
+    <!-- Custom colors -->
+    <color name="scanButtonColor">#2196F3</color>
+    <color name="overlayColor">#99000000</color>
+    <color name="edgeDetectionColor">#2196F3</color>
+    <color name="gridColor">#4DFFFFFF</color>
+    
+    <!-- Filter colors -->
+    <color name="chipSelectedBackground">#E3F2FD</color>
+    <color name="chipSelectedText">#2196F3</color>
+    <color name="chipUnselectedText">#757575</color>
+</resources>
